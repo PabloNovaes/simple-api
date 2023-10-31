@@ -1,0 +1,19 @@
+{
+  "name": "node-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --no-warnings ./src/server.js"
+  },
+  "keywords": [],
+  "author": "Jakeliny Gracielly",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.22"
+  }
+}
