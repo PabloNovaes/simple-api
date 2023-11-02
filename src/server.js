@@ -1,13 +1,16 @@
 import express from "express";
-import fs from "fs";
 import cors from "cors";
 import bodyParser from "body-parser";
+import routes from "./app/routes/routes.js";
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+<<<<<<< HEAD
+app.use(routes);
+=======
 
 app.get("/users", (req, res) => {
   fs.readFile("./db/users.json", "utf-8", (err, data) => {
@@ -19,27 +22,22 @@ app.get("/users", (req, res) => {
   });
 });
 
-app.post("/form", (req, res) => {
+app.post("/users/create", (req, res) => {
   const { email, password } = req.body.user;
   const data = { email, password };
   try {
     fs.readFile("./db/users.json", "utf8", (err, fileData) => {
       if (err) {
-        console.error(err);
-        return;
+        res.status(400).json({ message: "error!" });
       }
 
       let users = [];
-      if (fileData) {
-        users = JSON.parse(fileData);
-      }
-
+      users = JSON.parse(fileData);
       users.push(data);
 
       fs.writeFile("./db/users.json", JSON.stringify(users, null, 1), (err) => {
         if (err) {
-          console.error(err);
-          return;
+          return res.status(400).json({ message: "error!" });
         }
         res.status(201).json({ message: "created" });
       });
@@ -49,7 +47,7 @@ app.post("/form", (req, res) => {
   }
 });
 
-app.delete("/users/exclude", (req, res) => {
+app.delete("/users/delete", (req, res) => {
   const { email } = req.body;
 
   fs.readFile("./db/users.json", "utf8", (err, data) => {
@@ -59,7 +57,10 @@ app.delete("/users/exclude", (req, res) => {
 
     if (data) {
       const users = JSON.parse(data);
-      const userPosition = users.findIndex((user) => user.email == email);
+      const userPosition = users.findIndex((user) => user.email === email);
+      if (users[userPosition] == undefined)
+        return res.status(400).json({ message: "Essa conta não existe!" });
+
       users.splice(userPosition);
 
       const newUsersList = users;
@@ -70,10 +71,42 @@ app.delete("/users/exclude", (req, res) => {
         (err) => {
           if (err) throw err;
 
-          res.status(200).json({ message: "excluded" });
+          res.status(200).json({ message: "deleted!" });
         }
       );
     }
+  });
+});
+>>>>>>> 6cda46f19b94ee7d443b51ce99c88d927414f8af
+
+app.put("/users/update", (req, res) => {
+  const { password, email, newPassword } = req.body;
+
+  fs.readFile("./db/users.json", "utf-8", (err, data) => {
+    if (err) {
+      return res.status(200).json({ message: "error!" });
+    }
+
+    const users = JSON.parse(data);
+    const user = users.find((user) => {
+      if(user.email === email) return user
+    });
+    if (user.password !== password) {
+      return res.status(200).json({ message: "senha incorreta!" });
+    }
+    users[userPosition].password = newPassword;
+    console.log(users[userPosition].password)
+
+    const newUsersList = users;
+
+    fs.writeFile(
+      "./db/users.js",
+      JSON.stringify(newUsersList, null, 1),
+      (err) => {
+        if (err) throw err;
+        res.status(200).json({ message: "updated!" });
+      }
+    );
   });
 });
 
