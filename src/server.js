@@ -110,4 +110,35 @@ app.put("/users/update", (req, res) => {
   });
 });
 
+app.put("/users/update", (req, res) => {
+  const { password, email, newPassword } = req.body;
+
+  fs.readFile("./db/users.json", "utf-8", (err, data) => {
+    if (err) {
+      return res.status(200).json({ message: "error!" });
+    }
+
+    const users = JSON.parse(data);
+    const user = users.find((user) => {
+      if(user.email === email) return user
+    });
+    if (user.password !== password) {
+      return res.status(200).json({ message: "senha incorreta!" });
+    }
+    users[userPosition].password = newPassword;
+    console.log(users[userPosition].password)
+
+    const newUsersList = users;
+
+    fs.writeFile(
+      "./db/users.js",
+      JSON.stringify(newUsersList, null, 1),
+      (err) => {
+        if (err) throw err;
+        res.status(200).json({ message: "updated!" });
+      }
+    );
+  });
+});
+
 app.listen(5000, () => console.log("Server is running on port 5000"));
